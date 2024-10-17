@@ -1,0 +1,42 @@
+# Load necessary libraries
+library(did)
+library(dplyr)
+library(ggplot2)
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Create synthetic data
+n <- 100  # Total number of observations
+n_treated <- 50  # Number of treated units
+n_control <- n - n_treated  # Number of control units
+
+# Create data frame
+data <- data.frame(
+  id = 1:n,
+  post = rep(c(0, 1), each = n / 2),  # Treatment indicator
+  treated = rep(c(1, 0), times = c(n_treated, n_control)),  # Group indicator
+  y = rnorm(n)  # Outcome variable
+)
+
+# Introduce a treatment effect
+data$y[data$treated == 1 & data$post == 1] <- data$y[data$treated == 1 & data$post == 1] + 2  # Treatment effect
+
+# Fit a DiD model
+did_model <- lm(y ~ treated * post, data = data)
+
+# Summarize the results
+summary(did_model)
+
+# Plot results
+data %>%
+  group_by(post, treated) %>%
+  summarize(mean_y = mean(y), .groups = 'drop') %>%
+  ggplot(aes(x = post, y = mean_y, color = as.factor(treated))) +
+  geom_point(size = 4) +
+  geom_line(aes(group = treated)) +
+  labs(title = "Difference-in-Differences Analysis",
+       x = "Post Treatment (1 = Yes, 0 = No)",
+       y = "Mean Outcome (y)",
+       color = "Group") +
+  theme_minimal()
