@@ -1,0 +1,53 @@
+### Regressão polinomial local
+
+## Aproximação de Taylor 
+
+## Estrutura:
+# m(X) = b0 + b1(Xi - x)
+
+# t.q. f(x) = f(xo) + f'(xo)(x-xo)
+
+# SQ(x) = sum{Yi - (b0 + b1(Xi-x))}*K*((Xi-x)/h)
+
+library(KernSmooth)
+library(splines)
+
+# Estrutura do exercício:
+
+# Matriz
+
+n = c(100,300,1000)
+nr = 1000 
+set.seed(42)
+s = .8
+ni1 = .16
+ni2 = .5
+cn = length(n)
+
+for(j in 1:cn){
+  x = seq(0,10,length=n[j])
+for(i in 1:nr){
+  e = rnorm(n[j],0,s)
+  y = sin(2*pi*ni1*x)+cos(2*pi*ni2*x)+e
+  m1= locpoly(x,y,range.x=c(1,9),band=dpill(x,y))
+  
+  ms <- lm(y~bs(x,degree=3))
+  mns <- lm(y ~ns(x, df= 4))
+
+}
+}
+
+# Obs: band = h
+
+# Histograma
+
+hist(y,prob=T)
+den <- density(y)
+lines(den$x,den$y)
+
+# Epanechnikov
+
+grade = seq(-1,1,length=100)
+epa = 3/4*(1-grade^2)
+plot(grade,epa,type="l")
+lines(grade,dnorm(grade,0,1))
