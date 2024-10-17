@@ -1,0 +1,18 @@
+# Number of observations
+n = 200
+x = seq(0,10,length=n) 
+
+set.seed(42) ## For replication
+
+s = .8 # Standard deviation
+e = rnorm(n,0,s) 
+ni1 = .16 
+ni2 = .5
+y = sin(2*pi*ni1*x)+cos(2*pi*ni2*x)+e 
+plot(x,y)
+m1 = lm(y~x)
+abline(m1,col="blue")
+m2 = locpoly(x,y,band=dpill(x,y))
+lines(m2$x,m2$y,col="red")
+ey = sin(2*pi*ni1*x)+cos(2*pi*ni2*x)
+lines(x,ey,col="green")
