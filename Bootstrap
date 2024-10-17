@@ -1,0 +1,49 @@
+### Bootstrap for simple linear regression ###
+n = 100 # sample size
+nb = 1000   # number of bootstrap replicas
+est = matrix(rep(0, nb*2), ncol=2)
+mi = 0
+de = 1
+b0 = 10
+b1 = 1
+x = seq(0, 10, length = n)
+set.seed(12)
+e = rnorm(n, mi, de)   # original sample of size n
+y = b0 + b1*x + e
+plot(x, y)
+grade = seq(1, n)
+xb = rep(0, n)
+yb = rep(0, n)
+
+## bootstrap resampling the pairs
+
+for(i in 1:nb){
+  ind = sample(grade, n, replace = TRUE)
+  for(j in 1:n){
+    xb[j] = x[ind[j]]
+    yb[j] = y[ind[j]]
+  }
+  mo = lm(yb ~ xb)  
+  est[i,] = mo$coef
+}
+
+##### NEED TO "LOOK" AT THE RESULTS #####
+
+# par(mfrow = c(2,1))
+# hist(est[,1], prob = TRUE, main = "Parametric Bootstrap Histogram")
+# denp = density(est[,1])
+# lines(denp$x, denp$y, col = "blue")
+# xg = seq(9, 10.3, length = 100)
+# denorm = dnorm(xg, xb, dxb)
+# lines(xg, denorm, col = "red")
+# 
+# hist(est[,2], prob = TRUE)
+# dennp = density(est[,2])
+# lines(dennp$x, dennp$y, col = "blue")
+# denorm = dnorm(xg, xb, dxb)
+# lines(xg, denorm, col = "red")
+# 
+# icp = quantile(est[,1], probs = c(.025, .975))
+# icnp = quantile(est[,2], probs = c(.025, .975))
+# icp
+# icnp
