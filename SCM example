@@ -1,0 +1,40 @@
+# Load necessary library
+library(Synth)
+
+# Set parameters
+set.seed(42)
+n_control_units <- 3  # Reduced number of control units
+n_time_periods <- 20   # Total time periods
+treated_period <- 10    # Time period when the treatment starts
+
+# Generate synthetic data
+Y_control <- matrix(rnorm(n_time_periods * n_control_units), nrow = n_time_periods)
+Y_treated <- c(rep(0, treated_period), rnorm(n_time_periods - treated_period, 2, 1))
+
+# Combine treated and control units into a data frame
+data <- data.frame(
+  time = 1:n_time_periods,
+  Treated = Y_treated,
+  Control_1 = Y_control[, 1],
+  Control_2 = Y_control[, 2],
+  Control_3 = Y_control[, 3]
+)
+
+# Prepare data for the Synth package
+dataprep <- dataprep(
+  foo = data,
+  predictors = c("Control_1", "Control_2", "Control_3"),
+  dependent = "Treated",
+  unit.variable = "time",
+  time.variable = "time",
+  treatment.identifier = "Treated",
+  controls.identifier = c("Control_1", "Control_2", "Control_3"),
+  time.predictors.prior = 1:treated_period,
+  time.optimize.ssr = (treated_period + 1):n_time_periods
+)
+
+# Run synthetic control method
+synth_results <- synth(dataprep)
+
+# Plot results
+plot(synth_results)
